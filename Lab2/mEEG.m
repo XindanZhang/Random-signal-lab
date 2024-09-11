@@ -1,0 +1,40 @@
+load('D:\\随机实验\生物电信号数据\data\EEG.mat')
+fs=512;
+N=5000;
+t=1:20480;
+y=EEG(t);
+figure(1)
+subplot(311)
+plot(t(1:512),y(1:512));
+title('EEG信号时域波形(512点)');
+subplot(312)
+plot(t,y);
+title('EEG信号时域波形');
+subplot(313)
+freq=fft(y,N)/N;%做离散傅里叶
+freq_d=abs(fftshift(freq));
+w=(-N/2:1:N/2-1)*fs/N; %双边  
+plot(w,freq_d);
+ylim([0,45]);
+title('EEG信号频谱');
+xlabel('频率/Hz');
+ylabel('幅值/V');
+%功率谱
+figure(2)
+subplot(211)
+ypsd=freq_d.*conj(freq_d);
+plot(w,ypsd);
+title('EEG信号功率谱');
+xlabel('频率/Hz');
+ylabel('W/Hz');
+%信号自相关
+subplot(212)
+[Rx,maxlags]=xcorr(y,'unbiased');  %信号的自相关
+    plot(maxlags/fs,Rx/max(Rx));
+    xlim([-5,5]);
+    xlabel('时延差/s');
+title('EEG信号自相关');
+ylabel('R(τ)');
+ylim([-0.2,1.2]);
+aver=mean(y)
+v=var(y)
